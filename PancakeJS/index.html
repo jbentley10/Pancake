@@ -33,7 +33,7 @@ Leap.loop(options, function(frame) {
 });
 -->
 <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r54/three.js"></script>
-<script src="http://js.leapmotion.com/0.2.0-beta1/leap.min.js"></script>
+<script src="http://js.leapmotion.com/leap-0.6.2.js"></script>
 <script>
   var init = function(){
   var scene = new THREE.Scene();
@@ -47,6 +47,42 @@ Leap.loop(options, function(frame) {
 
   var fingers = {};
   var spheres = {};
+
+  var controller = Leap.loop({enableGestures: true}, function(frame){
+  if(frame.valid && frame.gestures.length > 0){
+    frame.gestures.forEach(function(gesture){
+        switch (gesture.type){
+          case "circle":
+              console.log("Circle Gesture");
+              break;
+          case "keyTap":
+              console.log("Key Tap Gesture");
+              break;
+          case "screenTap":
+              console.log("Screen Tap Gesture");
+              break;
+          case "swipe":
+              console.log("Swipe Gesture");
+              break;
+        }
+    });
+  }
+});
+
+  function leapPointToWorld(leapPoint, iBox) {
+    var normalized = iBox.normalizePoint(leapPoint, false);
+    var z = normalized[2];
+    // if changing from right-hand to left-hand rule, use:
+    //var z = normalized[2] * -1.0;
+    //recenter origin
+    var x = normalized[0] + 0.5;
+    z += 0.5;
+    //scale
+    x *= 100;
+    var y = normalized[1] * 100;
+    z *= 100;
+    return Leap.vec3.fromValues(x, y, z);
+  }
 
   Leap.loop(function(frame) {
 
@@ -65,7 +101,7 @@ Leap.loop(options, function(frame) {
       var direction = new THREE.Vector3(dir[0], dir[1], dir[2]);
 
       if (!finger) {
-        finger = new THREE.ArrowHelper(origin, direction, 40, Math.random() * 0xffffff);
+        finger = new THREE.ArrowHelper(origin, direction, 80, Math.random() * 0xffffff);
         fingers[pointable.id] = finger;
         scene.add(finger);
       }
