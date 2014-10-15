@@ -34,6 +34,18 @@ Leap.loop(options, function(frame) {
 -->
 <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r54/three.js"></script>
 <script src="http://js.leapmotion.com/leap-0.6.2.js"></script>
+
+<!--Load our JS files-->
+<script src="js/gamePane.js"></script>
+<script src="js/jquery.js"></script>
+<script src="js/three.js"></script>
+<script src="js/underscore.js"></script>
+
+<!-- load glsl files -->
+<script src="shaders/perlin.glsl"></script>
+<script src="shaders/woodFrag.glsl"></script>
+<script src="shaders/woodVert.glsl"></script>
+
 <script>
   var init = function(){
   var scene = new THREE.Scene();
@@ -41,7 +53,7 @@ Leap.loop(options, function(frame) {
   var renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
-  camera.position.z = 500;
+  camera.position.z = 200;
   camera.position.y = 200;
   camera.lookAt(new THREE.Vector3(0,200,0));
 
