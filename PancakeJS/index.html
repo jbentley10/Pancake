@@ -8,43 +8,19 @@
 	<div id="output!"></div>
 
 </body>
-<!--
-<script src="http://js.leapmotion.com/leap-0.6.3.js"></script>
-<script type="text/javascript">
-
-function concatData(id, data) {
-	return id + ":" + data + "<br>";
-}
-
-var output=document.getElementById('output');
-var frameString = "", handString = "", fingerString = "";
-var hand, finger; 
-
-var options = { enableGestures: true }; 
-
-
-Leap.loop(options, function(frame) { 
-	frameString = concatData("frame_id", frame.id);
-	frameString += concatData("num_hands", frame.hands.length);
-	frameString += concatData("num_fingers", frame.fingers.length);
-	frameString += "<br>";
-
-	output.innerHTML = frameString;
-});
--->
-<script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r54/three.js"></script>
-<script src="http://js.leapmotion.com/leap-0.6.2.js"></script>
 
 <!--Load our JS files-->
 <script src="js/gamePane.js"></script>
 <script src="js/jquery.js"></script>
 <script src="js/three.js"></script>
 <script src="js/underscore.js"></script>
+<script src="js/leap-0.6.2.js"></script>
 
-<!-- load glsl files -->
+<!-- load glsl files
 <script src="shaders/perlin.glsl"></script>
 <script src="shaders/woodFrag.glsl"></script>
 <script src="shaders/woodVert.glsl"></script>
+-->
 
 <script>
   var init = function(){
@@ -56,6 +32,9 @@ Leap.loop(options, function(frame) {
   camera.position.z = 200;
   camera.position.y = 200;
   camera.lookAt(new THREE.Vector3(0,200,0));
+  var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+  console.log("light added");
+  scene.add( light );
 
   var fingers = {};
   var spheres = {};
