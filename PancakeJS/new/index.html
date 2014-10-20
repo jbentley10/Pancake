@@ -1,21 +1,26 @@
 <!doctype html>
 <html lang=en >
 	<head>
-		<title>boilerplate r4</title>
+		<title>Unreal Pancakes!</title>
 		<meta charset=utf-8 >
 	</head>
 	<body>
-		<script src=http://js.leapmotion.com/leap-0.6.0-beta2.js ></script>
-		<script src=http://mrdoob.github.io/three.js/build/three.min.js ></script>
-		<script src=http://mrdoob.github.io/three.js/examples/js/controls/TrackballControls.js ></script>
-		<script src=http://mrdoob.github.io/three.js/examples/js/libs/stats.min.js ></script>
+		<script src="js/leap.js"></script>
+		<script src="js/three.min.js"></script>
+		<script src="js/TrackballControls.js" ></script>
+		<script src="js/stats.min.js" ></script>
 		<script>
 			// copyright (c) 2014-04-27 ~ Theo Armour ~ MIT License
 			// 2014-06-17 ~ User jacobischwartz reports issues running the boilerplate on a Mac. We are investigating...
-			var renderer, scene, camera, controls, stats;
+			var renderer, scene, camera, controls, stats, handCoordinateX, handCoordinateY, handCoordinateZ;
+			var isPressed = false;
 			var info, palm, phalanges = [];
 			init();
 			animate();
+			
+			// Check the update function 30 times a second
+			setInterval(update, 1000/30);
+
 			function init() {
 				var css, light, geometry, material, mesh;
 				css = document.body.appendChild( document.createElement('style') );
@@ -25,10 +30,9 @@
 				info = document.body.appendChild( document.createElement( 'div' ) );
 				info.style.cssText = 'left: 0; margin: auto; position: absolute; right: 0; width: 50%; ';
 				info.innerHTML = info.txt = '<h1>' +
-				document.title + ' ~ ' +
+				document.title + '  ' +
 				'<a href=# onclick=toggleInfo() >&#x24D8;</a>' +
 				'</h1>' +
-				'<p>Show one hand and five fingers to start</p>' +
 				'<div id=data ></div>' +
 				'';
 				// Three.js basics
@@ -86,27 +90,6 @@
 					scene.add( mesh );
 					phalanges.push( mesh );
 				}
-
-				var controller = Leap.loop({enableGestures: true}, function(frame){
-  					if(frame.valid && frame.gestures.length > 0){
-    					frame.gestures.forEach(function(gesture){
-        					switch (gesture.type){
-          						case "circle":
-              					console.log("Circle Gesture");
-              					break;
-          					case "keyTap":
-              					console.log("Key Tap Gesture");
-              					break;
-          					case "screenTap":
-              					console.log("Screen Tap Gesture");
-              					break;
-         	 				case "swipe":
-              					console.log("Swipe Gesture");
-              					break;
-        					}
-    					});
-  					}
-				});
 			}
 			function toggleInfo() {
 				info.innerHTML = info.txt +
@@ -124,8 +107,8 @@
 				'<i>Click anywhere in this message to hide...</i>' +
 				'</div>';
 			}
-			Leap.loop( function( frame ) {
-				var hand, phalanx, point, length;
+			Leap.loop({enableGestures: true}, function(frame) {
+				var phalanx, point, length;
 				if ( frame.hands.length ) {
 					hand = frame.hands[0];
 					palm.position.set( hand.palmPosition[0], hand.palmPosition[1], hand.palmPosition[2] );
@@ -133,7 +116,95 @@
 					direction = new THREE.Vector3( hand.direction[0], hand.direction[1], hand.direction[2] ); // best so far
 					palm.lookAt( direction.add( palm.position ) );
 					palm.rotation.z = -hand.roll();
+					// Print out hand coordinates
 					data.innerHTML = 'Hand X:' + hand.palmPosition[0].toFixed(0) + ' Y:' + hand.palmPosition[1].toFixed(0) + ' Z:' + hand.palmPosition[2].toFixed(0);
+
+					// Convert hand coordinates to our global variable
+					handCoordinateX = hand.palmPosition[0];
+					handCoordinateY = hand.palmPosition[1];
+					handCoordinateZ = hand.palmPosition[2];
+
+					// Check if the hand coordinate is in the upper left quadrant
+					if (handCoordinateZ <= 0 && handCoordinateZ >= -170) { 
+						if (handCoordinateX >= -170 && handCoordinateX <= -50) {
+							if(frame.valid && frame.gestures.length > 0){
+		    					frame.gestures.forEach(function(gesture){
+		        					switch (gesture.type){
+		          						case "keyTap":
+		              					console.log("Key Tap Gesture in Zone 1");
+		              					break;
+		        					}
+		    					});
+		  					}
+		  				}
+
+		  				// Check if the hand is in the upper middle quadrant
+		  				if (handCoordinateX >= -50 && handCoordinateX <= 50) {
+							if(frame.valid && frame.gestures.length > 0){
+		    					frame.gestures.forEach(function(gesture){
+		        					switch (gesture.type){
+		          						case "keyTap":
+		              					console.log("Key Tap Gesture in Zone 2");
+		              					break;
+		        					}
+		    					});
+		  					}
+		  				}
+
+		  				// Check if the hand is in the upper right quadrant
+		  				if (handCoordinateX >= 50 && handCoordinateX <= 170) {
+							if(frame.valid && frame.gestures.length > 0){
+		    					frame.gestures.forEach(function(gesture){
+		        					switch (gesture.type){
+		          						case "keyTap":
+		              					console.log("Key Tap Gesture in Zone 3");
+		              					break;
+		        					}
+		    					});
+		  					}
+		  				}
+		  			}
+
+					// Check if the hand coordinate is in the lower left quadrant
+					if (handCoordinateZ >=0 && handCoordinateZ <= 170) { 
+						if (handCoordinateX >= -170 && handCoordinateX <= -50) {
+							if(frame.valid && frame.gestures.length > 0){
+		    					frame.gestures.forEach(function(gesture){
+		        					switch (gesture.type){
+		          						case "keyTap":
+		              					console.log("Key Tap Gesture in Zone 4");
+		              					break;
+		        					}
+		    					});
+		  					}
+		  				}
+
+		  				// Check if the hand is in the lower middle quadrant
+		  				if (handCoordinateX >= -50 && handCoordinateX <= 50) {
+							if(frame.valid && frame.gestures.length > 0){
+		    					frame.gestures.forEach(function(gesture){
+		        					switch (gesture.type){
+		          						case "keyTap":
+		              					console.log("Key Tap Gesture in Zone 5");
+		              					break;
+		        					}
+		    					});
+		  					}
+		  				}
+
+		  				// Check if the hand is in the lower right quadrant
+		  				if (handCoordinateX >= 50 && handCoordinateX <= 170) {
+							if(frame.valid && frame.gestures.length > 0){
+		    					frame.gestures.forEach(function(gesture){
+		        					switch (gesture.type){
+		          						case "keyTap":
+		              					console.log("Key Tap Gesture in Zone 6");
+		              					break;
+		        					}
+		    					});
+		  					}
+		  				}
+		  			}
 				}
 				iLen = ( frame.pointables.length < 5 ) ? frame.pointables.length : 5;
 				for (var i = 0; i < iLen; i++) {
@@ -155,6 +226,15 @@
 				renderer.render( scene, camera );
 				controls.update();
 				stats.update();
+			}
+
+			function update(handCoordinateX) {
+  				if (handCoordinateX > 0 && handCoordinateX <= 50) {
+  					isPressed = true;
+					console.log("pressed");
+				} else {
+					isPressed = false;
+				}
 			}
 		</script>
 	</body>
