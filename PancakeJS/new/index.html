@@ -2,6 +2,7 @@
 <html lang=en >
 	<head>
 		<title>Unreal Pancakes!</title>
+		<h2>Click and drag to move the grill, tap pancakes</h2>
 		<meta charset=utf-8 >
 	</head>
 	<body>
@@ -12,7 +13,8 @@
 		<script>
 			// copyright (c) 2014-04-27 ~ Theo Armour ~ MIT License
 			// 2014-06-17 ~ User jacobischwartz reports issues running the boilerplate on a Mac. We are investigating...
-			var renderer, scene, camera, controls, stats, handCoordinateX, handCoordinateY, handCoordinateZ;
+			var renderer, scene, camera, controls, stats;
+			var handCoordinateX, handCoordinateY, handCoordinateZ, cube, zone, randomZone;
 			var isPressed = false;
 			var info, palm, phalanges = [];
 			init();
@@ -35,6 +37,7 @@
 				'</h1>' +
 				'<div id=data ></div>' +
 				'';
+
 				// Three.js basics
 				scene = new THREE.Scene();
 				renderer = new THREE.WebGLRenderer( { alpha: 1, antialias: true, clearColor: 0xffffff } );
@@ -48,6 +51,7 @@
 				stats = new Stats();
 				stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
 				document.body.appendChild( stats.domElement );
+
 				// Lights
 				light = new THREE.AmbientLight( 0x333333);
 				light.color.setHSL( 0.1, 0.5, 0.3 );
@@ -66,6 +70,7 @@
 				light.shadowCameraFar = 600;
 				// light.shadowCameraVisible = true;
 				scene.add( light );
+
 				// ground plane
 				material = new THREE.MeshLambertMaterial( {color: 0xaaaaaa } );
 				geometry = new THREE.BoxGeometry( 600, 10, 300 );
@@ -73,6 +78,7 @@
 				mesh.castShadow = true;
 				mesh.receiveShadow = true;
 				scene.add( mesh );
+
 				// palm
 				geometry = new THREE.BoxGeometry( 80, 20, 80 );
 				geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, -30 ) ); // to to +30 if using pitch roll & yaw
@@ -81,6 +87,12 @@
 				palm.castShadow = true;
 				palm.receiveShadow = true;
 				scene.add( palm );
+
+				// Add pancake material
+				cube = new THREE.Mesh(
+      			new THREE.SphereGeometry(50, 10, 10),
+     			new THREE.MeshLambertMaterial({color: 0xff0000}));
+  				createPancake(cube);
 				// phalanges
 				geometry = new THREE.BoxGeometry( 16, 12, 1 );
 				for ( var i = 0; i < 15; i++) {
@@ -91,6 +103,45 @@
 					phalanges.push( mesh );
 				}
 			}
+
+			function createPancake (cube) {
+
+				/* Pancake positions
+				// Zone 1: x = -120, z = -100
+				// Zone 2: x = 0, z = -100
+				// Zone 3: x = 150, z = -100
+				// Zone 4: x = -120, z = 100
+				// Zone 5: x = 0, z = 100
+				// Zone 6: x = 150, z = 100
+				*/
+
+				// Decide a zone to place the pancake
+				randomZone = Math.floor((Math.random() * 6) + 1);
+
+				// Position the pancake based on the outcome 
+				if (randomZone == 1) {
+					cube.position.x = -120;
+					cube.position.z = -100;
+				} else if (randomZone == 2) {
+					cube.position.x = 0;
+					cube.position.z = -100; 
+				} else if (randomZone == 3) {
+					cube.position.x = 150;
+					cube.position.z = -100; 
+				} else if (randomZone == 4) {
+					cube.position.x = -120;
+					cube.position.z = 100; 
+				} else if (randomZone == 5) {
+					cube.position.x = 0;
+					cube.position.z = 100; 
+				} else if (randomZone == 6) {
+					cube.position.x = 150;
+					cube.position.z = 100; 
+				}
+				// Add pancake to the scene
+  				scene.add(cube);
+			}
+
 			function toggleInfo() {
 				info.innerHTML = info.txt +
 				'<div onclick=info.innerHTML=info.txt style=background-color:#ccc;opacity:0.7;padding:10px;text-align:left; >' +
@@ -107,6 +158,7 @@
 				'<i>Click anywhere in this message to hide...</i>' +
 				'</div>';
 			}
+
 			Leap.loop({enableGestures: true}, function(frame) {
 				var phalanx, point, length;
 				if ( frame.hands.length ) {
@@ -117,7 +169,7 @@
 					palm.lookAt( direction.add( palm.position ) );
 					palm.rotation.z = -hand.roll();
 					// Print out hand coordinates
-					data.innerHTML = 'Hand X:' + hand.palmPosition[0].toFixed(0) + ' Y:' + hand.palmPosition[1].toFixed(0) + ' Z:' + hand.palmPosition[2].toFixed(0);
+					data.innerHTML = 'Hand X:' + hand.palmPosition[0].toFixed(0) + ' Y:' + hand.palmPosition[1].toFixed(0) + ' Z:' + hand.palmPosition[2].toFixed(0) + ' Zone: ' + zone;
 
 					// Convert hand coordinates to our global variable
 					handCoordinateX = hand.palmPosition[0];
@@ -127,11 +179,16 @@
 					// Check if the hand coordinate is in the upper left quadrant
 					if (handCoordinateZ <= 0 && handCoordinateZ >= -170) { 
 						if (handCoordinateX >= -170 && handCoordinateX <= -50) {
+							zone = 1;
 							if(frame.valid && frame.gestures.length > 0){
 		    					frame.gestures.forEach(function(gesture){
 		        					switch (gesture.type){
 		          						case "keyTap":
 		              					console.log("Key Tap Gesture in Zone 1");
+		              					if (randomZone == 1) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
 		              					break;
 		        					}
 		    					});
@@ -140,11 +197,16 @@
 
 		  				// Check if the hand is in the upper middle quadrant
 		  				if (handCoordinateX >= -50 && handCoordinateX <= 50) {
+		  					zone = 2;
 							if(frame.valid && frame.gestures.length > 0){
 		    					frame.gestures.forEach(function(gesture){
 		        					switch (gesture.type){
 		          						case "keyTap":
 		              					console.log("Key Tap Gesture in Zone 2");
+		              					if (randomZone == 2) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
 		              					break;
 		        					}
 		    					});
@@ -153,11 +215,16 @@
 
 		  				// Check if the hand is in the upper right quadrant
 		  				if (handCoordinateX >= 50 && handCoordinateX <= 170) {
+		  					zone = 3;
 							if(frame.valid && frame.gestures.length > 0){
 		    					frame.gestures.forEach(function(gesture){
 		        					switch (gesture.type){
 		          						case "keyTap":
 		              					console.log("Key Tap Gesture in Zone 3");
+		              					if (randomZone == 3) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
 		              					break;
 		        					}
 		    					});
@@ -168,11 +235,16 @@
 					// Check if the hand coordinate is in the lower left quadrant
 					if (handCoordinateZ >=0 && handCoordinateZ <= 170) { 
 						if (handCoordinateX >= -170 && handCoordinateX <= -50) {
+							zone = 4;
 							if(frame.valid && frame.gestures.length > 0){
 		    					frame.gestures.forEach(function(gesture){
 		        					switch (gesture.type){
 		          						case "keyTap":
 		              					console.log("Key Tap Gesture in Zone 4");
+		              					if (randomZone == 4) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
 		              					break;
 		        					}
 		    					});
@@ -181,11 +253,16 @@
 
 		  				// Check if the hand is in the lower middle quadrant
 		  				if (handCoordinateX >= -50 && handCoordinateX <= 50) {
+		  					zone = 5;
 							if(frame.valid && frame.gestures.length > 0){
 		    					frame.gestures.forEach(function(gesture){
 		        					switch (gesture.type){
 		          						case "keyTap":
 		              					console.log("Key Tap Gesture in Zone 5");
+		              					if (randomZone == 5) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
 		              					break;
 		        					}
 		    					});
@@ -194,11 +271,16 @@
 
 		  				// Check if the hand is in the lower right quadrant
 		  				if (handCoordinateX >= 50 && handCoordinateX <= 170) {
+		  					zone = 6;
 							if(frame.valid && frame.gestures.length > 0){
 		    					frame.gestures.forEach(function(gesture){
 		        					switch (gesture.type){
 		          						case "keyTap":
 		              					console.log("Key Tap Gesture in Zone 6");
+		              					if (randomZone == 6) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
 		              					break;
 		        					}
 		    					});
