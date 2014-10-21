@@ -168,13 +168,20 @@
 					direction = new THREE.Vector3( hand.direction[0], hand.direction[1], hand.direction[2] ); // best so far
 					palm.lookAt( direction.add( palm.position ) );
 					palm.rotation.z = -hand.roll();
-					// Print out hand coordinates
-					data.innerHTML = 'Hand X:' + hand.palmPosition[0].toFixed(0) + ' Y:' + hand.palmPosition[1].toFixed(0) + ' Z:' + hand.palmPosition[2].toFixed(0) + ' Zone: ' + zone;
 
 					// Convert hand coordinates to our global variable
 					handCoordinateX = hand.palmPosition[0];
 					handCoordinateY = hand.palmPosition[1];
 					handCoordinateZ = hand.palmPosition[2];
+					// Check if the user is too close to the Leap 
+					if (handCoordinateY < 130 || handCoordinateY > 320) {
+						yStatus = " Hand out of bounds!";
+					} else {
+						yStatus = " Good"
+					}
+
+					// Print out hand coordinates, zone number, and warn of hand position
+					data.innerHTML = 'Hand X:' + hand.palmPosition[0].toFixed(0) + ' Y:' + hand.palmPosition[1].toFixed(0) + ' Z:' + hand.palmPosition[2].toFixed(0) + ' || Zone: ' + zone + '|| Status: ' + yStatus;
 
 					// Check if the hand coordinate is in the upper left quadrant
 					if (handCoordinateZ <= 0 && handCoordinateZ >= -170) { 
@@ -185,6 +192,20 @@
 		        					switch (gesture.type){
 		          						case "keyTap":
 		              					console.log("Key Tap Gesture in Zone 1");
+		              					if (randomZone == 1) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
+		              					case "screenTap": 
+		              					console.log("screenTap Gesture in Zone 1");
+		              					if (randomZone == 1) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
+		              					case "swipe": 
+		              					console.log("Swipe Gesture in Zone 1");
 		              					if (randomZone == 1) {
 		              						scene.remove(cube);
 		              						createPancake(cube);
@@ -208,6 +229,20 @@
 		              						createPancake(cube);
 		              					}
 		              					break;
+		              					case "screenTap":
+		              					console.log("screenTap Gesture in Zone 2");
+		              					if (randomZone == 2) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
+		              					case "swipe":
+		              					console.log("swipe Gesture in Zone 2");
+		              					if (randomZone == 2) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
 		        					}
 		    					});
 		  					}
@@ -221,6 +256,20 @@
 		        					switch (gesture.type){
 		          						case "keyTap":
 		              					console.log("Key Tap Gesture in Zone 3");
+		              					if (randomZone == 3) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
+		              					case "screenTap":
+		              					console.log("screenTap Gesture in Zone 3");
+		              					if (randomZone == 3) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
+		              					case "swipe":
+		              					console.log("swipe Gesture in Zone 3");
 		              					if (randomZone == 3) {
 		              						scene.remove(cube);
 		              						createPancake(cube);
@@ -246,6 +295,20 @@
 		              						createPancake(cube);
 		              					}
 		              					break;
+		              					case "screenTap":
+		              					console.log("screenTap Gesture in Zone 4");
+		              					if (randomZone == 4) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
+		              					case "swipe":
+		              					console.log("swipe Gesture in Zone 4");
+		              					if (randomZone == 4) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
 		        					}
 		    					});
 		  					}
@@ -264,6 +327,20 @@
 		              						createPancake(cube);
 		              					}
 		              					break;
+		              					case "screenTap":
+		              					console.log("screenTap Gesture in Zone 5");
+		              					if (randomZone == 5) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
+		              					case "swipe":
+		              					console.log("swipe Gesture in Zone 5");
+		              					if (randomZone == 5) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
 		        					}
 		    					});
 		  					}
@@ -277,6 +354,20 @@
 		        					switch (gesture.type){
 		          						case "keyTap":
 		              					console.log("Key Tap Gesture in Zone 6");
+		              					if (randomZone == 6) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
+		              					case "screenTap":
+		              					console.log("screenTap Gesture in Zone 6");
+		              					if (randomZone == 6) {
+		              						scene.remove(cube);
+		              						createPancake(cube);
+		              					}
+		              					break;
+		              					case "swipe":
+		              					console.log("swipe Gesture in Zone 6");
 		              					if (randomZone == 6) {
 		              						scene.remove(cube);
 		              						createPancake(cube);
